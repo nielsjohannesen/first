@@ -1,0 +1,2 @@
+# first
+Learn agentic coding
