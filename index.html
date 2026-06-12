@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing Game — Firms &amp; Markets</title>
+<style>
+:root {
+  --navy:  #1a2744;
+  --blue:  #2563eb;
+  --green: #15803d;
+  --red:   #dc2626;
+  --bg:    #f5f5f0;
+  --card:  #ffffff;
+  --border:#e2e2dc;
+  --muted: #6b7280;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--bg);
+  color: #1a1a1a;
+  min-height: 100vh;
+}
+header {
+  background: var(--navy);
+  color: #fff;
+  padding: 0.9rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+header h1 { font-size: 1.1rem; font-weight: 600; }
+header .meta { font-size: 0.85rem; opacity: 0.65; }
+.container { max-width: 1200px; margin: 0 auto; padding: 1.75rem 1rem; }
+
+/* ── Cards ── */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem 1.5rem;
+  margin-bottom: 1.25rem;
+}
+.card-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 1rem;
+}
+
+/* ── Info boxes ── */
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+.info-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.875rem 1rem;
+  text-align: center;
+}
+.info-box .lbl { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+.info-box .val { font-size: 1.4rem; font-weight: 700; color: var(--navy); }
+
+/* ── Tables ── */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+th {
+  background: #f0f0eb;
+  text-align: right;
+  padding: 0.45rem 0.65rem;
+  font-weight: 600;
+  color: var(--muted);
+  font-size: 0.7rem;
+  border-bottom: 2px solid var(--border);
+  white-space: nowrap;
+}
+th:first-child, th:nth-child(2) { text-align: left; }
+td {
+  text-align: right;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid #f0f0eb;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+td:first-child { text-align: left; color: var(--muted); font-size: 0.78rem; }
+td:nth-child(2) { text-align: left; font-weight: 600; }
+tr:last-child td { border-bottom: none; }
+.pos { color: var(--green); font-weight: 700; }
+.neg { color: var(--red);   font-weight: 700; }
+.zer { color: var(--muted); font-weight: 600; }
+
+/* ── Start screen ── */
+.start-wrap { max-width: 460px; margin: 5rem auto; text-align: center; }
+.start-wrap h1 { font-size: 2rem; color: var(--navy); margin-bottom: 0.4rem; }
+.start-wrap .sub { color: var(--muted); font-size: 1rem; margin-bottom: 2rem; }
+.start-wrap .card { text-align: left; }
+.start-wrap .desc { font-size: 0.9rem; color: #444; margin-bottom: 1rem; line-height: 1.6; }
+
+/* ── Forms ── */
+.row { display: flex; gap: 0.6rem; margin-top: 0.75rem; }
+input[type="number"] {
+  flex: 1;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 1rem;
+  outline: none;
+}
+input[type="number"]:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+.btn {
+  padding: 0.6rem 1.2rem;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.btn:hover { background: #1d4ed8; }
+.btn-dark { background: var(--navy); }
+.btn-dark:hover { background: #0f1a33; }
+.btn-sm { font-size: 0.8rem; padding: 0.4rem 0.85rem; }
+.err { color: var(--red); font-size: 0.82rem; margin-top: 0.4rem; }
+
+/* ── Price entry ── */
+.price-entry { display: flex; gap: 0.75rem; align-items: flex-end; flex-wrap: wrap; }
+.field label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--muted); margin-bottom: 0.2rem; }
+.field input { width: 150px; }
+
+/* ── Copy strip ── */
+.copy-strip {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.copy-strip p { font-size: 0.82rem; color: var(--muted); }
+.copy-ok { color: var(--green); font-size: 0.82rem; display: none; }
+
+/* ── Alert ── */
+.alert { padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: 0.875rem; }
+.alert-info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
+.alert-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ── Parameters (calibrate here) ──────────────────────────────────────────────
+const A         = 200;   // demand intercept  (Q = A - B*P + noise)
+const B         = 5;     // demand slope
+const NOISE_SD  = 8;     // std dev of noise per shop per round
+const COST      = 20;    // variable cost per unit ($)
+const SHOPS     = 10;
+const ROUNDS    = 5;
+const HIST_P    = [15, 20, 25];   // historical prices shown at the start
+
+// Optimal price = (A/B + COST) / 2 = (40 + 20) / 2 = 30
+// Optimal Q per shop ≈ 50,  profit per shop ≈ $500
+
+// ── Seeded PRNG ──────────────────────────────────────────────────────────────
+function rng32(seed) {
+  let s = seed >>> 0;
+  return () => {
+    s = (s + 0x6D2B79F5) >>> 0;
+    let t = Math.imul(s ^ (s >>> 15), s | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+function normal(rng) {   // Box-Muller
+  let u; do { u = rng(); } while (u === 0);
+  return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * rng());
+}
+
+// roundIdx 0,1,2 = historical;  3–7 = game rounds 1–5
+function simulate(group, roundIdx, price) {
+  return Array.from({ length: SHOPS }, (_, shop) => {
+    const r = rng32((group * 100 + roundIdx) * 1000 + shop + 1);
+    return Math.max(0, Math.round(A - B * price + normal(r) * NOISE_SD));
+  });
+}
+
+// ── State ────────────────────────────────────────────────────────────────────
+let S = { screen: 'start', group: null, hist: [], rounds: [], cur: 1, err: null };
+
+// ── Actions ──────────────────────────────────────────────────────────────────
+function startGame(g) {
+  S = {
+    screen: 'game', group: g, cur: 1, err: null, rounds: [],
+    hist: HIST_P.map((p, i) => {
+      const sales = simulate(g, i, p);
+      return { price: p, sales, total: sum(sales) };
+    })
+  };
+  render();
+}
+
+function submitPrice(raw) {
+  const p = parseFloat(raw);
+  if (!raw || isNaN(p) || p <= 0 || p > 500) {
+    S.err = 'Please enter a price between $1 and $500.'; render(); return;
+  }
+  S.err = null;
+  const sales = simulate(S.group, 3 + S.cur - 1, p);
+  const total = sum(sales);
+  S.rounds.push({ round: S.cur, price: p, sales, total, revenue: p * total, profit: (p - COST) * total });
+  S.cur < ROUNDS ? S.cur++ : (S.screen = 'end');
+  render();
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+const sum  = a => a.reduce((x, y) => x + y, 0);
+const $    = n => '$' + Math.round(n).toLocaleString('en-US');
+const n0   = n => Math.round(n).toLocaleString('en-US');
+const pc   = p => p > 0 ? 'pos' : p < 0 ? 'neg' : 'zer';
+const shopTH = Array.from({ length: SHOPS }, (_, i) => `<th>Shop&nbsp;${i+1}</th>`).join('');
+
+function tableRow(label, price, sales, total, revenue, profit) {
+  return `<tr>
+    <td>${label}</td>
+    <td>${$(price)}</td>
+    ${sales.map(s => `<td>${n0(s)}</td>`).join('')}
+    <td><strong>${n0(total)}</strong></td>
+    <td>${$(revenue)}</td>
+    <td class="${pc(profit)}">${$(profit)}</td>
+  </tr>`;
+}
+
+function histRow(h) {
+  return tableRow('Historical', h.price, h.sales, h.total, h.price * h.total, (h.price - COST) * h.total);
+}
+
+function roundRow(r) {
+  return tableRow(`Round ${r.round}`, r.price, r.sales, r.total, r.revenue, r.profit);
+}
+
+const fullTable = rows => `
+  <div class="tbl-wrap"><table>
+    <thead><tr><th></th><th>Price</th>${shopTH}<th>Total&nbsp;Units</th><th>Revenue</th><th>Profit</th></tr></thead>
+    <tbody>${rows}</tbody>
+  </table></div>`;
+
+// ── TSV builders ─────────────────────────────────────────────────────────────
+function fullTSV() {
+  const shopH = Array.from({ length: SHOPS }, (_, i) => `Shop ${i+1}`).join('\t');
+  const hdr   = `Group\tType\tPrice\t${shopH}\tTotal Units\tRevenue\tProfit`;
+  const hRows = S.hist.map(h => {
+    const profit = (h.price - COST) * h.total;
+    return `${S.group}\tHistorical\t${h.price}\t${h.sales.join('\t')}\t${h.total}\t${h.price * h.total}\t${profit}`;
+  });
+  const rRows = S.rounds.map(r =>
+    `${S.group}\tRound ${r.round}\t${r.price}\t${r.sales.join('\t')}\t${r.total}\t${r.revenue}\t${r.profit}`
+  );
+  return [hdr, ...hRows, ...rRows].join('\n');
+}
+
+function summaryTSV() {
+  const hdr   = `Group\tType\tPrice\tTotal Units\tRevenue\tProfit`;
+  const hRows = S.hist.map(h => {
+    const profit = (h.price - COST) * h.total;
+    return `${S.group}\tHistorical\t${h.price}\t${h.total}\t${h.price * h.total}\t${profit}`;
+  });
+  const rRows = S.rounds.map(r =>
+    `${S.group}\tRound ${r.round}\t${r.price}\t${r.total}\t${r.revenue}\t${r.profit}`
+  );
+  return [hdr, ...hRows, ...rRows].join('\n');
+}
+
+function copyBtn(id, label, fn) {
+  return `<button class="btn btn-dark btn-sm" id="${id}">${label}</button><span class="copy-ok" id="${id}ok">✓ Copied!</span>`;
+}
+
+function attachCopy(id, fn) {
+  const btn = document.getElementById(id);
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    navigator.clipboard.writeText(fn()).then(() => {
+      const el = document.getElementById(id + 'ok');
+      el.style.display = 'inline';
+      setTimeout(() => el.style.display = 'none', 2500);
+    });
+  });
+}
+
+// ── Screens ──────────────────────────────────────────────────────────────────
+function renderStart() {
+  return `<div class="start-wrap">
+    <h1>Pricing Game</h1>
+    <p class="sub">Firms &amp; Markets</p>
+    <div class="card">
+      <p class="desc">
+        You manage <strong>${SHOPS} shops</strong>. Each round you set one price that applies to all shops.
+        Your aim is to maximise total profit over <strong>${ROUNDS} rounds</strong>.<br><br>
+        Unit cost: <strong>${$(COST)}</strong> per unit sold.
+      </p>
+      <p style="font-size:.85rem;color:#666;">Enter your group number to begin.</p>
+      <div class="row">
+        <input type="number" id="gIn" placeholder="Group number" min="1" max="999" autofocus>
+        <button class="btn" id="startBtn">Start →</button>
+      </div>
+      <div class="err" id="gErr"></div>
+    </div>
+  </div>`;
+}
+
+function renderGame() {
+  const totProfit = sum(S.rounds.map(r => r.profit));
+
+  const infoGrid = `<div class="info-grid">
+    <div class="info-box"><div class="lbl">Group</div><div class="val">#${S.group}</div></div>
+    <div class="info-box"><div class="lbl">Unit Cost</div><div class="val">${$(COST)}</div></div>
+    <div class="info-box"><div class="lbl">Round</div><div class="val">${S.cur} / ${ROUNDS}</div></div>
+    <div class="info-box"><div class="lbl">Total Profit</div><div class="val ${pc(totProfit)}">${$(totProfit)}</div></div>
+  </div>`;
+
+  const histCard = `<div class="card">
+    <div class="card-title">Historical Sales Data</div>
+    ${fullTable(S.hist.map(histRow).join(''))}
+  </div>`;
+
+  let prevCard = '';
+  if (S.rounds.length > 0) {
+    const copyStrip = `<div class="copy-strip">
+      <p>Copy current data (tab-separated, pastes into Excel):</p>
+      ${copyBtn('cpFull', 'Copy all data')}
+      &nbsp;
+      ${copyBtn('cpSum', 'Copy summary (for professor)')}
+    </div>`;
+    prevCard = `<div class="card">
+      <div class="card-title">Your Results So Far</div>
+      ${fullTable(S.rounds.map(roundRow).join(''))}
+      ${copyStrip}
+    </div>`;
+  }
+
+  const errHtml = S.err ? `<div class="err">${S.err}</div>` : '';
+  const priceCard = `<div class="card">
+    <div class="card-title">Round ${S.cur} — Set Your Price</div>
+    <div class="price-entry">
+      <div class="field">
+        <label for="pIn">Price ($)</label>
+        <input type="number" id="pIn" placeholder="e.g. 30" min="1" step="1" autofocus>
+      </div>
+      <button class="btn" id="subBtn">Submit →</button>
+    </div>
+    ${errHtml}
+  </div>`;
+
+  return `
+  <header><h1>Pricing Game — Firms &amp; Markets</h1><span class="meta">Group #${S.group}</span></header>
+  <div class="container">${infoGrid}${histCard}${prevCard}${priceCard}</div>`;
+}
+
+function renderEnd() {
+  const totProfit = sum(S.rounds.map(r => r.profit));
+  const best = S.rounds.reduce((b, r) => r.profit > b.profit ? r : b);
+
+  const infoGrid = `<div class="info-grid">
+    <div class="info-box"><div class="lbl">Group</div><div class="val">#${S.group}</div></div>
+    <div class="info-box"><div class="lbl">Total Profit</div><div class="val ${pc(totProfit)}">${$(totProfit)}</div></div>
+    <div class="info-box"><div class="lbl">Best Price</div><div class="val">${$(best.price)}</div></div>
+    <div class="info-box"><div class="lbl">Best Round Profit</div><div class="val ${pc(best.profit)}">${$(best.profit)}</div></div>
+  </div>`;
+
+  const allRows = [...S.hist.map(histRow), ...S.rounds.map(roundRow)].join('');
+  const copyStrip = `<div class="copy-strip">
+    <p>Paste into Excel:</p>
+    ${copyBtn('cpFull', 'Copy all data (full detail)')}
+    &nbsp;
+    ${copyBtn('cpSum', 'Copy summary (for professor)')}
+  </div>`;
+
+  return `
+  <header><h1>Pricing Game — Firms &amp; Markets</h1><span class="meta">Group #${S.group} — Complete</span></header>
+  <div class="container">
+    <div class="alert alert-success">Game complete! Copy your data below and send the <em>summary</em> to your professor.</div>
+    ${infoGrid}
+    <div class="card">
+      <div class="card-title">Full Results — All Rounds</div>
+      ${fullTable(allRows)}
+      ${copyStrip}
+    </div>
+  </div>`;
+}
+
+// ── Render & wire ─────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('app').innerHTML =
+    S.screen === 'start' ? renderStart() :
+    S.screen === 'game'  ? renderGame()  : renderEnd();
+
+  // Start screen
+  const startBtn = document.getElementById('startBtn');
+  if (startBtn) {
+    const go = () => {
+      const v = parseInt(document.getElementById('gIn').value);
+      if (!v || v < 1 || v > 999) { document.getElementById('gErr').textContent = 'Please enter a valid group number (1–999).'; return; }
+      startGame(v);
+    };
+    startBtn.addEventListener('click', go);
+    document.getElementById('gIn').addEventListener('keydown', e => e.key === 'Enter' && go());
+  }
+
+  // Game screen — price submit
+  const subBtn = document.getElementById('subBtn');
+  if (subBtn) {
+    const go = () => submitPrice(document.getElementById('pIn').value);
+    subBtn.addEventListener('click', go);
+    document.getElementById('pIn').addEventListener('keydown', e => e.key === 'Enter' && go());
+  }
+
+  // Copy buttons (game + end screens)
+  attachCopy('cpFull', fullTSV);
+  attachCopy('cpSum',  summaryTSV);
+}
+
+render();
+</script>
+</body>
+</html>
